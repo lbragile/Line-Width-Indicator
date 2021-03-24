@@ -10,14 +10,14 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:line-width-indicator.helloWorld"
+    "onCommand:line-width-indicator.activateLineWidthIndicator"
   ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "line-width-indicator.helloWorld",
-        "title": "Hello World"
+        "command": "line-width-indicator.activateLineWidthIndicator",
+        "title": "Activate LWI"
       }
     ]
   },
