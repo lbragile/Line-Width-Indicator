@@ -2,15 +2,24 @@
   "name": "line-width-indicator",
   "displayName": "Line Width Indicator",
   "description": "Shows how many characters you can type until line limit is reached.",
+  "publisher": "lbragile",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.46.0"
   },
   "categories": [
+    "Formatters",
     "Other"
   ],
+  "keywords": [
+    "word count",
+    "line limit",
+    "character count",
+    "character count indicator"
+  ],
   "activationEvents": [
-    "onCommand:line-width-indicator.activateLineWidthIndicator"
+    "onCommand:line-width-indicator.activateLineWidthIndicator",
+    "onStartupFinished"
   ],
   "main": "./dist/extension.js",
   "contributes": {
