@@ -1,67 +1,67 @@
 import * as vscode from "vscode";
 
+class LineWidthIndicator {
+  #decorationType: vscode.TextEditorDecorationType;
+
+  constructor(opts: { color: string; contentText: string }) {
+    this.#decorationType = vscode.window.createTextEditorDecorationType({ after: opts });
+  }
+
+  getLineNum(editor: vscode.TextEditor): { position: vscode.Position; text: string } {
+    const cursorPos = editor.selection.active;
+    const lineText = editor.document.lineAt(cursorPos as vscode.Position);
+    return { position: lineText?.range.end, text: lineText?.text };
+  }
+
+  getDecorDetails(text: string): { color: string; contentText: string } {
+    const settings = vscode.workspace.getConfiguration("line-width-indicator");
+    const breakPoints = settings.get("breakpointRulers") as { color: string; column: number }[];
+
+    const columns = breakPoints.map((x) => x.column);
+    const colors = breakPoints.map((x) => x.color);
+
+    // produces an array of columns less than current text length.
+    // the length of this array is the indicator of which color to use.
+    // Need to set a hard stop if this value is greater than number of colors (text length > set limits)
+    let indexToPick = columns.filter((limit) => limit < text.length).length;
+    indexToPick = indexToPick === colors.length ? indexToPick - 1 : indexToPick;
+
+    return { color: colors[indexToPick], contentText: `  ${120 - text.length}` };
+  }
+
+  appendCounterToLine = (e: vscode.TextDocumentChangeEvent): void => {
+    if (e.contentChanges) {
+      const editor = vscode.window.activeTextEditor as vscode.TextEditor;
+      if (editor) {
+        const { position, text } = this.getLineNum(editor);
+
+        this.#decorationType.dispose();
+        this.#decorationType = vscode.window.createTextEditorDecorationType({ after: this.getDecorDetails(text) });
+
+        const range = [new vscode.Range(position, new vscode.Position(position.line, position.character + 3))];
+        editor.setDecorations(this.#decorationType, range);
+      }
+    }
+  };
+}
+
 export function activate(context: vscode.ExtensionContext) {
-  // This line of code will only be executed once when your extension is activated
-  console.log('Congratulations, your extension "line-width-indicator" is now active!');
+  console.log("Line Width Indicator is active!");
 
-  let disposable = vscode.workspace.onDidChangeTextDocument(appendCounterToLine);
-
-  // let disposable = vscode.commands.registerCommand("line-width-indicator.activateLineWidthIndicator", () => {
-  //   // Display a message box to the user
-  //   vscode.window.showInformationMessage("Line Width Indicator is now active");
-
-  //   // editor?.edit((atCursorLineEnd) => atCursorLineEnd.insert(lineEndPos as vscode.Position, "hello"));
-  // });
+  const LWI = new LineWidthIndicator({ color: "white", contentText: "" });
+  let disposable = vscode.workspace.onDidChangeTextDocument(LWI.appendCounterToLine);
 
   context.subscriptions.push(disposable);
 }
 
-let decorationType = vscode.window.createTextEditorDecorationType({
-  after: { color: "rgb(0, 255, 0, 0.6)", contentText: `\t\t120` },
-});
-
-function getLineNum(editor: vscode.TextEditor): { position: vscode.Position; text: string } {
-  const cursorPos = editor.selection.active;
-  const lineText = editor.document.lineAt(cursorPos as vscode.Position);
-  return { position: lineText?.range.end, text: lineText?.text };
-}
-
-const appendCounterToLine = async (e: vscode.TextDocumentChangeEvent): Promise<boolean> => {
-  if (e.contentChanges) {
-    const editor = vscode.window.activeTextEditor as vscode.TextEditor;
-    let retVal: boolean = false;
-    if (editor) {
-      const { position, text } = getLineNum(editor);
-
-      decorationType.dispose();
-      decorationType = vscode.window.createTextEditorDecorationType({
-        after: {
-          color: `${
-            text.length + 10 <= 120
-              ? "rgb(0, 255, 0, 0.6)"
-              : text.length + 5 <= 120
-              ? "rgb(255, 255, 0, 0.6)"
-              : text.length <= 120
-              ? "rgb(255, 165, 0, 0.6)"
-              : "rgb(255, 0, 0, 0.6)"
-          }`,
-          contentText: `  ${120 - text.length}`,
-        },
-      });
-
-      const range = [new vscode.Range(position, new vscode.Position(position.line, position.character + 3))];
-      editor.setDecorations(decorationType, range);
-
-      if (text.length > 120 + 5 - 1) {
-        retVal = (await editor.edit((atCursorPos) => atCursorPos.insert(position, " // prettier-ignore\r"))) as boolean;
-      }
-    }
-
-    return retVal;
-  } else {
-    return await new Promise((resolve) => resolve(false));
-  }
-};
-
 // this method is called when your extension is deactivated
 export function deactivate() {}
+
+// registering a command
+
+// let disposable = vscode.commands.registerCommand("line-width-indicator.activateLineWidthIndicator", () => {
+//   // Display a message box to the user
+//   vscode.window.showInformationMessage("Line Width Indicator is now active");
+
+//   // editor?.edit((atCursorLineEnd) => atCursorLineEnd.insert(lineEndPos as vscode.Position, "hello"));
+// });

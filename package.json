@@ -28,7 +28,34 @@
         "command": "line-width-indicator.activateLineWidthIndicator",
         "title": "Activate LWI"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "Line Width Indicator",
+      "properties": {
+        "line-width-indicator.breakpointRulers": {
+          "type": "{color: string; column: number}[]",
+          "default": [
+            {
+              "color": "rgb(0, 255, 0, 0.6)",
+              "column": 110
+            },
+            {
+              "color": "rgb(255, 255, 0, 0.6)",
+              "column": 115
+            },
+            {
+              "color": "rgb(255, 165, 0, 0.6)",
+              "column": 120
+            },
+            {
+              "color": "rgb(255, 0, 0, 0.6)",
+              "column": 125
+            }
+          ],
+          "description": "The counter will change to the respective color when its count is below that column's value"
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
