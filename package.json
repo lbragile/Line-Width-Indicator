@@ -3,7 +3,7 @@
   "displayName": "Line Width Indicator",
   "description": "Shows how many characters you can type until line limit is reached.",
   "publisher": "lbragile",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "engines": {
     "vscode": "^1.46.0"
   },
@@ -16,7 +16,7 @@
     "type": "git",
     "url": "https://github.com/lbragile/Line-Width-Indicator.git"
   },
-  "homepage": "https://github.com/lbragile/Line-Width-Indicator/blob/main/README.md",
+  "homepage": "https://github.com/lbragile/Line-Width-Indicator/blob/master/README.md",
   "categories": [
     "Formatters",
     "Other"
@@ -27,6 +27,11 @@
     "character count",
     "character count indicator"
   ],
+  "icon": "images/lwi-logo.png",
+  "galleryBanner": {
+    "color": "#99CCFF",
+    "theme": "dark"
+  },
   "activationEvents": [
     "onCommand:line-width-indicator.activateLineWidthIndicator",
     "onStartupFinished"
@@ -42,8 +47,8 @@
     "configuration": {
       "title": "Line Width Indicator",
       "properties": {
-        "line-width-indicator.breakpointRulers": {
-          "type": "{color: string; column: number}[]",
+        "LWI.breakpointRulers": {
+          "type": "array",
           "default": [
             {
               "color": "rgb(0, 255, 0, 0.6)",
@@ -62,7 +67,25 @@
               "column": 125
             }
           ],
-          "description": "The counter will change to the respective color when its count is below that column's value"
+          "description": "The counter will change to the respective color when its count is below that column's value."
+        },
+        "LWI.excludedLanguages": {
+          "type": "array",
+          "default": [
+            "json",
+            "css",
+            "html",
+            "markdown",
+            "plaintext",
+            "scss",
+            "yaml"
+          ],
+          "markdownDescription": "An array of [languages identifiers](https://code.visualstudio.com/docs/languages/identifiers#_known-language-identifiers) for which you wish not to use the 'Line Width Indicator' extension."
+        },
+        "LWI.formatMaxWidth": {
+          "type": "number",
+          "default": 120,
+          "markdownDescription": "This should match your default formatter maximum width before it applies text wrapping."
         }
       }
     }

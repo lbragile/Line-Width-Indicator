@@ -1,3 +1,5 @@
+<img src="./src/images/lwi-logo.png" alt="LWI Logo" width=128/>
+
 # Line Width Indicator
 
 Tired of guessing how many more characters you can type before your formatter decides its time to wrap to the next line? What about those hefty rulers that seem out of place? Wouldn't it be nice to have a visual indicator as you type?
@@ -5,9 +7,11 @@ Tired of guessing how many more characters you can type before your formatter de
 This is exactly what Line Width Indicator does!
 It simply places a counter at the end of each line that indicates how many characters you have left before you reach a settings configurable value.
 
+Line Width Indicator is also **Open Source** under **MIT License**. Visit the [repository](https://github.com/lbragile/Line-Width-Indicator) and feel free to contribute!
+
 ## Features
 
-Currently the indicator is shown and updates as you type with predefined colors that can be adjusted in the settings.
+Currently the indicator is shown and updates as you type with predefined colors that can be adjusted in the settings. You can also adjust which languages are affected and the maximum threshold value that your formatter allows.
 
 #### Future Plans
 
@@ -35,9 +39,15 @@ None 😋
 
 You can add the following settings:
 
-- `line-width-indicator.breakpointRulers`: The counter will change to the respective color when its count is below that column's value
+- `LWI.breakpointRulers`: The counter will change to the respective color when its count is below that column's value.
+
+- `LWI.excludedLanguages`: An array of [languages identifiers](https://code.visualstudio.com/docs/languages/identifiers#_known-language-identifiers) for which you wish not to use the 'Line Width Indicator' extension.
+
+- `LWI.formatMaxWidth`: This should match your default formatter maximum width before it applies text wrapping.
 
 ## Known Issues
+
+None... yet 😁
 
 <!-- Calling out known issues can help limit users opening duplicate issues against your extension. -->
 

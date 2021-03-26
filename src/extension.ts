@@ -1,10 +1,29 @@
 import * as vscode from "vscode";
 
 class LineWidthIndicator {
+  #editor = vscode.window.activeTextEditor as vscode.TextEditor;
   #decorationType: vscode.TextEditorDecorationType;
 
   constructor(opts: { color: string; contentText: string }) {
     this.#decorationType = vscode.window.createTextEditorDecorationType({ after: opts });
+  }
+
+  /* @ts-ignore */
+  get decorationType(): vscode.TextEditorDecorationType {
+    return this.#decorationType;
+  }
+
+  /* @ts-ignore */
+  set decorationType(opts: { color: string; contentText: string }) {
+    this.#decorationType = vscode.window.createTextEditorDecorationType({ after: opts });
+  }
+
+  get activeEditor() {
+    return this.#editor;
+  }
+
+  set activeEditor(editor) {
+    this.#editor = editor;
   }
 
   getLineNum(editor: vscode.TextEditor): { position: vscode.Position; text: string } {
@@ -14,8 +33,9 @@ class LineWidthIndicator {
   }
 
   getDecorDetails(text: string): { color: string; contentText: string } {
-    const settings = vscode.workspace.getConfiguration("line-width-indicator");
+    const settings = vscode.workspace.getConfiguration("LWI");
     const breakPoints = settings.get("breakpointRulers") as { color: string; column: number }[];
+    const formatMaxWidth = settings.get("formatMaxWidth") as number;
 
     const columns = breakPoints.map((x) => x.column);
     const colors = breakPoints.map((x) => x.color);
@@ -26,21 +46,25 @@ class LineWidthIndicator {
     let indexToPick = columns.filter((limit) => limit < text.length).length;
     indexToPick = indexToPick === colors.length ? indexToPick - 1 : indexToPick;
 
-    return { color: colors[indexToPick], contentText: `  ${120 - text.length}` };
+    return { color: colors[indexToPick], contentText: `  ${formatMaxWidth - text.length}` };
   }
 
-  appendCounterToLine = (e: vscode.TextDocumentChangeEvent): void => {
-    if (e.contentChanges) {
-      const editor = vscode.window.activeTextEditor as vscode.TextEditor;
-      if (editor) {
-        const { position, text } = this.getLineNum(editor);
+  appendCounterToLine = (e: vscode.TextDocumentChangeEvent, excludedLanguages: string[]): void => {
+    const langIncluded = excludedLanguages.includes(e.document.languageId);
+    // document type is not one of the excluded languages -> add LWI
+    if (!langIncluded && e.contentChanges) {
+      if (this.#editor) {
+        const { position, text } = this.getLineNum(this.#editor);
 
         this.#decorationType.dispose();
         this.#decorationType = vscode.window.createTextEditorDecorationType({ after: this.getDecorDetails(text) });
 
         const range = [new vscode.Range(position, new vscode.Position(position.line, position.character + 3))];
-        editor.setDecorations(this.#decorationType, range);
+        this.#editor.setDecorations(this.#decorationType, range);
       }
+    } else {
+      // remove LWI counter
+      this.decorationType.dispose();
     }
   };
 }
@@ -48,10 +72,14 @@ class LineWidthIndicator {
 export function activate(context: vscode.ExtensionContext) {
   console.log("Line Width Indicator is active!");
 
-  const LWI = new LineWidthIndicator({ color: "white", contentText: "" });
-  let disposable = vscode.workspace.onDidChangeTextDocument(LWI.appendCounterToLine);
-
-  context.subscriptions.push(disposable);
+  const excludedLanguages = vscode.workspace.getConfiguration("LWI").get("excludedLanguages");
+  if (!Array.isArray(excludedLanguages)) {
+    vscode.window.showErrorMessage("Excluded languages must be an array!");
+  } else {
+    const LWI = new LineWidthIndicator({ color: "white", contentText: "" });
+    let disposable = vscode.workspace.onDidChangeTextDocument((e) => LWI.appendCounterToLine(e, excludedLanguages));
+    context.subscriptions.push(disposable);
+  }
 }
 
 // this method is called when your extension is deactivated
