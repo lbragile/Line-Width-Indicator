@@ -1,4 +1,4 @@
-<img src="./src/images/lwi-logo.png" alt="LWI Logo" width=128/>
+<img src="https://i.imgur.com/ecQmjTZ.png" alt="LWI Logo" width=128/>
 
 # Line Width Indicator
 
