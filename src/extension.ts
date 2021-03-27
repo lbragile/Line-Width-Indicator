@@ -33,7 +33,7 @@ class LineWidthIndicator {
   }
 
   getDecorDetails(text: string): { color: string; contentText: string } {
-    const settings = vscode.workspace.getConfiguration("LWI");
+    const settings = vscode.workspace.getConfiguration("line-width-indicator");
     const breakPoints = settings.get("breakpointRulers") as { color: string; column: number }[];
     const formatMaxWidth = settings.get("formatMaxWidth") as number;
 
@@ -72,24 +72,29 @@ class LineWidthIndicator {
 export function activate(context: vscode.ExtensionContext) {
   console.log("Line Width Indicator is active!");
 
-  const excludedLanguages = vscode.workspace.getConfiguration("LWI").get("excludedLanguages");
-  if (!Array.isArray(excludedLanguages)) {
+  const excLangs = vscode.workspace.getConfiguration("line-width-indicator").get("excludedLanguages");
+  if (!Array.isArray(excLangs)) {
     vscode.window.showErrorMessage("Excluded languages must be an array!");
   } else {
     const LWI = new LineWidthIndicator({ color: "white", contentText: "" });
-    let disposable = vscode.workspace.onDidChangeTextDocument((e) => LWI.appendCounterToLine(e, excludedLanguages));
-    context.subscriptions.push(disposable);
+    let disposableChangeEvent = vscode.workspace.onDidChangeTextDocument((e) => LWI.appendCounterToLine(e, excLangs));
+
+    // registering a command
+    let disposableActivate = vscode.commands.registerCommand("line-width-indicator.activateLWI", () => {
+      // Display a message box to the user
+      vscode.window.showInformationMessage("Line Width Indicator is now enabled");
+      disposableChangeEvent = vscode.workspace.onDidChangeTextDocument((e) => LWI.appendCounterToLine(e, excLangs));
+    });
+
+    let disposableDeactivate = vscode.commands.registerCommand("line-width-indicator.deactivateLWI", () => {
+      vscode.window.showInformationMessage("Line Width Indicator is now disabled");
+      disposableChangeEvent.dispose();
+      LWI.decorationType.dispose();
+    });
+
+    context.subscriptions.push(...[disposableChangeEvent, disposableActivate, disposableDeactivate]);
   }
 }
 
 // this method is called when your extension is deactivated
 export function deactivate() {}
-
-// registering a command
-
-// let disposable = vscode.commands.registerCommand("line-width-indicator.activateLineWidthIndicator", () => {
-//   // Display a message box to the user
-//   vscode.window.showInformationMessage("Line Width Indicator is now active");
-
-//   // editor?.edit((atCursorLineEnd) => atCursorLineEnd.insert(lineEndPos as vscode.Position, "hello"));
-// });
