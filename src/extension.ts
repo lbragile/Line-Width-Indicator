@@ -8,10 +8,10 @@ interface ITextDecor {
 /**
  * Line Width Indicator (LWI) is a VS Code Extension that shows you the character count on each line with various colors.
  * If needed LWI also adds comments (defined in settings) to prevent formatters from considering the line.
- * LWI is open source: https://github.com/lbragile/Line-Width-Indicator
- * LWI is available on the VS Code Extension Store: https://marketplace.visualstudio.com/items?itemName=lbragile.line-width-indicator
+ * @see LWI is open source: https://github.com/lbragile/Line-Width-Indicator
+ * @see LWI is available on the VS Code Extension Store: https://marketplace.visualstudio.com/items?itemName=lbragile.line-width-indicator
  */
-class LineWidthIndicator {
+export class LineWidthIndicator {
   /**
    * @private Current editor where the user is typing
    */

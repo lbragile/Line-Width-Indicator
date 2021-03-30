@@ -3,7 +3,7 @@
   "displayName": "Line Width Indicator",
   "description": "Shows how many characters you can type until line limit is reached.",
   "publisher": "lbragile",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "engines": {
     "vscode": "^1.46.0"
   },

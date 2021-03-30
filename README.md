@@ -1,4 +1,4 @@
-<img src="https://i.imgur.com/ecQmjTZ.png" alt="LWI Logo" width=128/>
+<img src="https://i.imgur.com/0cFEWGm.png" alt="LWI Logo" width=128/>
 
 # Line Width Indicator
 
@@ -61,15 +61,7 @@ None... yet 😁
 This is an initial release, just to get familiar with VS Code extension publishing.
 More work will be added in the very near future. Stay tuned!
 
-#### 🔸 0.0.4 - Functionality Breakthrough
-
-- Fixed issue where editor change caused LWI to disable.
-- Added commands to enable/disable LWI.
-- Settings allow user to choose colors, breakpoints, and add languages to exclude.
-
-#### 🔸 0.0.1 - Initial/Test release
-
-- Indicator is shown on each line with colors defined by user specified settings.
+See the [Change Log](https://marketplace.visualstudio.com/items/lbragile.line-width-indicator/changelog) for more in depth details.
 
 ---
 
