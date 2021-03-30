@@ -15,11 +15,11 @@ Currently the indicator is shown and updates as you type with predefined colors 
 
 #### Future Plans
 
-1. Automatic comment insertion which prevents default formatter from acting on the line. Only added when a given threshold is passed.
-2. Formatting trigger when limit is reached
-3. Position and/or style indicator configured in settings
-4. Position of comments configured in settings (same line or above)
-5. Incorporate user feedback!
+- [ ] Automatic comment insertion which prevents default formatter from acting on the line. Only added when a given threshold is passed.
+- [ ] Formatting trigger when limit is reached
+- [ ] Position of comments configured in settings (same line or above)
+- [ ] Incorporate user feedback!
+- [x] Position and/or style indicator configured in settings
 
 <!-- Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
 
@@ -45,6 +45,11 @@ You can add the following settings:
 
 - `LWI.formatMaxWidth`: This should match your default formatter maximum width before it applies text wrapping.
 
+## Available Commands:
+
+- `ctrl+k ctrl+a`: Enable LWI (on documents with supported languages)
+- `ctrl+k ctrl+d`: Disable LWI
+
 ## Known Issues
 
 None... yet 😁
@@ -56,9 +61,15 @@ None... yet 😁
 This is an initial release, just to get familiar with VS Code extension publishing.
 More work will be added in the very near future. Stay tuned!
 
-### 0.0.1 - Initial/Test release
+#### 🔸 0.0.4 - Functionality Breakthrough
 
-Indicator is shown on each line with colors defined by user specified settings.
+- Fixed issue where editor change caused LWI to disable.
+- Added commands to enable/disable LWI.
+- Settings allow user to choose colors, breakpoints, and add languages to exclude.
+
+#### 🔸 0.0.1 - Initial/Test release
+
+- Indicator is shown on each line with colors defined by user specified settings.
 
 ---
 

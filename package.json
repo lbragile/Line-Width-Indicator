@@ -3,7 +3,7 @@
   "displayName": "Line Width Indicator",
   "description": "Shows how many characters you can type until line limit is reached.",
   "publisher": "lbragile",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "engines": {
     "vscode": "^1.46.0"
   },
@@ -37,29 +37,29 @@
     "theme": "light"
   },
   "activationEvents": [
-    "onCommand:line-width-indicator.activateLWI",
+    "onCommand:LWI.activateLWI",
     "onStartupFinished"
   ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "line-width-indicator.activateLWI",
+        "command": "LWI.activateLWI",
         "title": "Enable LWI"
       },
       {
-        "command": "line-width-indicator.deactivateLWI",
+        "command": "LWI.deactivateLWI",
         "title": "Disable LWI"
       }
     ],
     "keybindings": [
       {
-        "command": "line-width-indicator.deactivateLWI",
+        "command": "LWI.deactivateLWI",
         "key": "ctrl+k ctrl+d",
         "when": "editorTextFocus"
       },
       {
-        "command": "line-width-indicator.activateLWI",
+        "command": "LWI.activateLWI",
         "key": "ctrl+k ctrl+a",
         "when": "editorTextFocus"
       }
@@ -67,7 +67,7 @@
     "configuration": {
       "title": "Line Width Indicator",
       "properties": {
-        "line-width-indicator.breakpointRulers": {
+        "LWI.breakpointRulers": {
           "type": "array",
           "default": [
             {
@@ -89,10 +89,11 @@
           ],
           "description": "The counter will change to the respective color when its count is below that column's value."
         },
-        "line-width-indicator.excludedLanguages": {
+        "LWI.excludedLanguages": {
           "type": "array",
           "default": [
             "json",
+            "jsonc",
             "css",
             "html",
             "markdown",
@@ -102,10 +103,10 @@
           ],
           "markdownDescription": "An array of [languages identifiers](https://code.visualstudio.com/docs/languages/identifiers#_known-language-identifiers) for which you wish not to use the 'Line Width Indicator' extension."
         },
-        "line-width-indicator.formatMaxWidth": {
+        "LWI.formatMaxWidth": {
           "type": "number",
           "default": 120,
-          "markdownDescription": "This should match your default formatter maximum width before it applies text wrapping."
+          "description": "This should match your default formatter maximum width before it applies text wrapping."
         }
       }
     }
