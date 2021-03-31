@@ -1,13 +1,11 @@
 import * as assert from "assert";
-
-// You can import and use all API from the 'vscode' module
-// as well as import your extension to test it
 import * as vscode from "vscode";
-import { LineWidthIndicator } from "../../extension";
+
+import { LineWidthIndicator } from "../../components/LWI";
+
+const opts = { color: "", contentText: "" };
 
 suite("LWI.getNumLine", () => {
-  const opts = { color: "white", contentText: "" };
-
   test("output matches cursor position and line text", async () => {
     const LWI = new LineWidthIndicator(opts);
     const editor = LWI.getActiveEditor;
@@ -21,28 +19,25 @@ suite("LWI.getNumLine", () => {
 });
 
 suite("LWI.getDecorDetails", () => {
-  const opts = { color: "white", contentText: "" };
   let text = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the indus"; // prettier-ignore
   const LWI = new LineWidthIndicator(opts);
 
-  test("getDecorDetails", () => {
-    const expectArr = [
-      { extraText: "", color: "rgb(0, 255, 0, 0.6)", contentText: "  15" }, // before first threshold
-      { extraText: "12345", color: "rgb(0, 255, 0, 0.6)", contentText: "  10" }, // at first threshold
-      { extraText: "67", color: "rgb(255, 255, 0, 0.6)", contentText: "  8" }, // between first & second thresholds
-      { extraText: "890", color: "rgb(255, 255, 0, 0.6)", contentText: "  5" }, // at second threshold
-      { extraText: "12", color: "rgb(255, 165, 0, 0.6)", contentText: "  3" }, // between second & third thresholds
-      { extraText: "345", color: "rgb(255, 165, 0, 0.6)", contentText: "  0" }, // at third threshold
-      { extraText: "67", color: "rgb(255, 0, 0, 0.6)", contentText: "  -2" }, // between third and forth threshold
-      { extraText: "890", color: "rgb(255, 0, 0, 0.6)", contentText: "  -5" }, // at forth threshold
-      { extraText: "12345678", color: "rgb(255, 0, 0, 0.6)", contentText: "  -13" }, // after forth threshold
-    ];
+  const expectArr = [
+    { extraText: "", color: "rgb(0, 255, 0, 0.6)", contentText: "5", description: "before 1st threshold" },
+    { extraText: "12345", color: "rgb(0, 255, 0, 0.6)", contentText: "0", description: "at 1st threshold" },
+    { extraText: "12", color: "rgb(255, 255, 0, 0.6)", contentText: "3", description: "between 1st & 2nd thresholds" },
+    { extraText: "345", color: "rgb(255, 255, 0, 0.6)", contentText: "0", description: "at 2nd threshold" },
+    { extraText: "67", color: "rgb(255, 0, 0, 0.6)", contentText: "3", description: "between 2nd and last threshold" },
+    { extraText: "890", color: "rgb(255, 0, 0, 0.6)", contentText: "0", description: "at 3rd threshold" },
+    { extraText: "67890", color: "rgb(255, 0, 0, 0.6)", contentText: "-5", description: "after 3rd threshold" },
+  ];
 
-    expectArr.forEach((expect) => {
+  expectArr.forEach((expect, index) => {
+    test(`${index}. ${expect.description} → ${expect.color}, ${expect.contentText}`, () => {
       text += expect.extraText;
       let result = LWI.getDecorDetails(text);
       assert.strictEqual(result.color, expect.color);
-      assert.strictEqual(result.contentText, expect.contentText);
+      assert.strictEqual(result.contentText, "  " + expect.contentText);
     });
   });
 });

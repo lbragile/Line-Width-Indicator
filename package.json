@@ -67,7 +67,7 @@
     "configuration": {
       "title": "Line Width Indicator",
       "properties": {
-        "LWI.breakpointRulers": {
+        "LWI.limits.breakpoints": {
           "type": "array",
           "default": [
             {
@@ -79,15 +79,11 @@
               "column": 115
             },
             {
-              "color": "rgb(255, 165, 0, 0.6)",
-              "column": 120
-            },
-            {
               "color": "rgb(255, 0, 0, 0.6)",
-              "column": 125
+              "column": 120
             }
           ],
-          "description": "The counter will change to the respective color when its count is below that column's value."
+          "description": "The counter will be a given color when its count is below that column's respective value."
         },
         "LWI.excludedLanguages": {
           "type": "array",
@@ -103,14 +99,51 @@
           ],
           "markdownDescription": "An array of [languages identifiers](https://code.visualstudio.com/docs/languages/identifiers#_known-language-identifiers) for which you wish not to use the 'Line Width Indicator' extension."
         },
-        "LWI.formatMaxWidth": {
+        "LWI.limits.formattingThreshold": {
           "type": "number",
-          "default": 120,
-          "description": "This should match your default formatter maximum width before it applies text wrapping."
+          "default": 5,
+          "description": "Lets LWI know when to add a 'format ignore' comment to the line. If you only have 1 breakpoint, then its column value + this number is used as the upper bound. A comment is added only once the counter is between these values. If multiple breakpoints are set, then the last value is used.",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "LWI.comment.ignoreComment": {
+          "type": "string",
+          "default": "// prettier-ignore",
+          "description": "A comment that is added to preserve the current line formatting (no wrapping). Depending on your formatter, this will differ.",
+          "minLength": 4,
+          "maxLength": 50,
+          "pattern": "// [a-z]+"
+        },
+        "LWI.comment.autoRemoveBelowLower": {
+          "type": "boolean",
+          "default": "true",
+          "markdownDescription": "Once an `#LWI.comment.ignoreComment#` is added, this will auto remove it if the text length falls below the lowest breakpoint."
+        },
+        "LWI.comment.autoRemoveAboveUpper": {
+          "type": "boolean",
+          "default": "true",
+          "markdownDescription": "Once an `#LWI.comment.ignoreComment#` is added, this will auto remove it if the text length passes the last breakpoint."
+        },
+        "LWI.comment.autoComment": {
+          "type": "boolean",
+          "default": "true",
+          "markdownDescription": "Whether or not to automatically add the `#LWI.comment.ignoreComment#`."
         }
       }
     }
   },
+  "badges": [
+    {
+      "url": "https://img.shields.io/visual-studio-marketplace/v/lbragile.line-width-indicator?label=Version&style=flat-square",
+      "description": "VS Marketplace Version",
+      "href": "https://marketplace.visualstudio.com/items?itemName=lbragile.line-width-indicator"
+    },
+    {
+      "url": "https://img.shields.io/github/license/lbragile/Line-Width-Indicator?&label=License&&style=flat-square",
+      "description": "License",
+      "href": "https://github.com/lbragile/Line-Width-Indicator/blob/master/LICENSE.md"
+    }
+  ],
   "scripts": {
     "vscode:prepublish": "npm run package",
     "compile": "webpack",
