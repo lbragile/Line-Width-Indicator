@@ -145,30 +145,34 @@ export class LineWidthIndicator {
       let curPos = this.#editor.selection.active;
       curPos = new vscode.Position(curPos.line, curPos.character + 1);
 
-      const endPos = this.#editor.document.lineAt(curPos.line)?.range.end;
+      const textLine = this.#editor.document.lineAt(curPos.line);
+      const endPos = textLine?.range.end;
       const commentRange = new vscode.Range(endPos.line, Math.max(0, endPos.character - comment.length), endPos.line, endPos.character); // prettier-ignore
       const commentRangeText = this.#editor.document.getText(commentRange);
 
-      // only want to add a comment (to end of line) when it isn't added yet
-      if (lastColumn < text.length && text.length <= lastColumn + threshold && commentRangeText !== comment) {
-        await this.#editor.edit((atPos) => atPos.insert(endPos, comment));
+      // insert comment only on lines that are not comments themselves
+      if (textLine?.text.substr(textLine.firstNonWhitespaceCharacterIndex, 2) !== "//") {
+        if (lastColumn < text.length && text.length <= lastColumn + threshold && commentRangeText !== comment) {
+          // only want to add a comment (to end of line) when it isn't added yet
+          await this.#editor.edit((atPos) => atPos.insert(endPos, comment));
 
-        // move cursor back to where it was prior to insertion.
-        // This will be the end position prior to adding the comment.
-        // Only move if the cursor is past the newly inserted comment section
-        if (this.#editor.selection.active.character === endPos.character + comment.length) {
-          this.#editor.selection = new vscode.Selection(endPos, endPos);
+          // move cursor back to where it was prior to insertion.
+          // This will be the end position prior to adding the comment.
+          // Only move if the cursor is past the newly inserted comment section
+          if (this.#editor.selection.active.character === endPos.character + comment.length) {
+            this.#editor.selection = new vscode.Selection(endPos, endPos);
+          }
         }
-      }
 
-      // remove the comment once threshold is passed (as defined in the settings)
-      const lowerBound = lastColumn + comment.length;
-      const upperBound = lowerBound + threshold;
-      if (
-        (upperBound < text.length && upperRemove) ||
-        (text.length <= lowerBound && commentRangeText.includes(comment) && lowerRemove)
-      ) {
-        await this.#editor.edit((atPos) => atPos.replace(commentRange, ""));
+        // remove the comment once threshold is passed (as defined in the settings)
+        const lowerBound = lastColumn + comment.length;
+        const upperBound = lowerBound + threshold;
+        if (
+          commentRangeText.includes(comment) &&
+          ((upperBound < text.length && upperRemove) || (text.length <= lowerBound && lowerRemove))
+        ) {
+          await this.#editor.edit((atPos) => atPos.replace(commentRange, ""));
+        }
       }
     }
   }

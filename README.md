@@ -4,6 +4,10 @@
 
 [![Marketplace](https://img.shields.io/visual-studio-marketplace/v/lbragile.line-width-indicator?label=Version&style=flat-square)](https://marketplace.visualstudio.com/items?itemName=lbragile.line-width-indicator) [![License](https://img.shields.io/github/license/lbragile/Line-Width-Indicator?&label=License&&style=flat-square)](https://github.com/lbragile/Line-Width-Indicator/blob/master/LICENSE.md)
 
+[![LWI Demo](https://i.imgur.com/U2FSvgq.gif)](https://i.imgur.com/U2FSvgq.gif)
+
+👆 **Click to Enlarge** 👌
+
 Tired of guessing how many more characters you can type before your formatter decides its time to wrap to the next line? What about those hefty rulers that seem out of place? Wouldn't it be nice to have a visual indicator as you type?
 
 This is exactly what Line Width Indicator does!
