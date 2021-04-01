@@ -102,10 +102,10 @@ export class LineWidthIndicator {
    * @param e Represents an event describing the change in a text editor's selections
    */
   handleSelectionChange(e: vscode.TextEditorSelectionChangeEvent): void {
-    if (e.kind === 1 || e.kind === 2) {
+    if (e.kind && e.kind >= 1) {
       // keyboard or mouse selection change
       this.getDecorationType.dispose();
-      this.appendCounterToLine(e.textEditor.document);
+      this.appendCounterToLine(e.textEditor.document, true);
     }
   }
 
@@ -115,11 +115,10 @@ export class LineWidthIndicator {
    * If document's language is not supported (settings), disables counter decoration.
    * @param document The document on which the change event occurred
    */
-  appendCounterToLine(document: vscode.TextDocument): void {
-    const excLangs = vscode.workspace.getConfiguration("LWI").get("excludedLanguages") as string[];
-    if (!Array.isArray(excLangs)) {
-      vscode.window.showErrorMessage("Excluded languages must be an array!");
-    }
+  appendCounterToLine(document: vscode.TextDocument, skipCommentToggle?: boolean): void {
+    const settings = vscode.workspace.getConfiguration("LWI");
+    const excLangs = settings.get("excludedLanguages") as string[];
+    const breakpoints = settings.get("limits.breakpoints") as { color: string; column: number }[];
 
     const excluded = excLangs.includes(document.languageId);
 
@@ -137,7 +136,11 @@ export class LineWidthIndicator {
 
       // only add new decoration and/or comment if the user typed something on that line previously
       if (text.length > 0) {
-        this.toggleIgnoreComment(text);
+        // only need to check for comment toggle if typing is near the breakpoints
+        const lastColumn = breakpoints[breakpoints.length - 1].column;
+        if (!skipCommentToggle && text.length >= lastColumn - 10) {
+          this.toggleIgnoreComment(text, lastColumn);
+        }
 
         // make a new decoration
         this.#decorationType = vscode.window.createTextEditorDecorationType({ after: this.getDecorDetails(text) });
@@ -155,20 +158,18 @@ export class LineWidthIndicator {
    * to prevent the formatter from applying to this line. Once the length of the text exceeds the last breakpoint
    * column + threshold value, the comment is removed. This all happens automatically.
    * @param text The current text of the line being edited
+   * @param lastColumn Breakpoint after which ignore comment is added
    */
-  async toggleIgnoreComment(text: string): Promise<void> {
+  async toggleIgnoreComment(text: string, lastColumn: number): Promise<void> {
     // get relevant settings
     const settings = vscode.workspace.getConfiguration("LWI");
     const threshold = settings.get("limits.formattingThreshold") as number;
-    const breakpoints = settings.get("limits.breakpoints") as { color: string; column: number }[];
     const comment = (" " + settings.get("comment.ignoreComment")) as string;
     const autoComment = settings.get("comment.autoComment") as boolean;
     const upperRemove = settings.get("comment.autoRemoveAboveUpper") as boolean;
     const lowerRemove = settings.get("comment.autoRemoveBelowLower") as boolean;
 
     if (autoComment) {
-      const lastColumn = breakpoints[breakpoints.length - 1].column;
-
       // get text after current cursor position to see if comment is already added
       let curPos = this.#editor.selection.active;
       curPos = new vscode.Position(curPos.line, curPos.character + 1);
@@ -194,11 +195,12 @@ export class LineWidthIndicator {
         }
 
         // remove the comment once threshold is passed (as defined in the settings)
+        // only do this if the user isn't typing the ignore comment manually
         const lowerBound = lastColumn + comment.length;
         const upperBound = lowerBound + threshold;
         if (
-          commentRangeText.includes(comment) &&
-          ((upperBound + 1 === text.length && upperRemove) || (text.length === lowerBound && lowerRemove))
+          commentRangeText === comment &&
+          ((upperBound + 1 === text.length && upperRemove) || (text.length <= lowerBound && lowerRemove))
         ) {
           await this.#editor.edit((atPos) => atPos.replace(commentRange, ""), editStopOpts);
         }

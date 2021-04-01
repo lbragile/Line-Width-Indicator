@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { LineWidthIndicator } from "./components/LWI";
 
 export function activate(context: vscode.ExtensionContext): void {
-  vscode.window.showInformationMessage("Line Width Indicator extension is active!");
+  // vscode.window.showInformationMessage("Line Width Indicator extension is active!");
 
   const LWI = new LineWidthIndicator({ color: "", contentText: "" });
 
@@ -10,13 +10,15 @@ export function activate(context: vscode.ExtensionContext): void {
   let changeSelectionEvent = vscode.window.onDidChangeTextEditorSelection((e) => LWI.handleSelectionChange(e));
 
   let activateEvent = vscode.commands.registerCommand("LWI.activateLWI", () => {
-    vscode.window.showInformationMessage("Line Width Indicator is now enabled");
+    // vscode.window.showInformationMessage("Line Width Indicator is now enabled");
     changeTextEvent = vscode.workspace.onDidChangeTextDocument((e) => LWI.appendCounterToLine(e.document));
+    changeSelectionEvent = vscode.window.onDidChangeTextEditorSelection((e) => LWI.handleSelectionChange(e));
   });
 
   let deactivateEvent = vscode.commands.registerCommand("LWI.deactivateLWI", () => {
-    vscode.window.showInformationMessage("Line Width Indicator is now disabled");
+    // vscode.window.showInformationMessage("Line Width Indicator is now disabled");
     changeTextEvent.dispose();
+    changeSelectionEvent.dispose();
     LWI.getDecorationType.dispose();
   });
 

@@ -4,13 +4,25 @@ All notable changes to the [Line Width Indicator](https://github.com/lbragile/Li
 
 <!-- Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file. -->
 
-## [0.0.5] - 3/30/2021
+## [0.0.6] - 04/01/2021
+
+### Added
+
+- Counter styling options.
+
+- Counter display on selection change with keyboard or mouse.
+
+### Fixed
+
+- Ignore comment behavior - better insertion and removal logic.
+
+## [0.0.5] - 03/30/2021
 
 ### Added
 
 - Automatic comment insertion to prevent formatting of the line with settings to enable/disable.
 
-## [0.0.4] - 3/29/2021
+## [0.0.4] - 03/29/2021
 
 ### Added
 
@@ -21,7 +33,7 @@ All notable changes to the [Line Width Indicator](https://github.com/lbragile/Li
 
 - Issue where editor change caused LWI to disable.
 
-## [0.0.1] - 3/26/2021
+## [0.0.1] - 03/26/2021
 
 ### Added
 

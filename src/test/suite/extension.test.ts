@@ -37,7 +37,7 @@ suite("LWI.getDecorDetails", () => {
       text += expect.extraText;
       let result = LWI.getDecorDetails(text);
       assert.strictEqual(result.color, expect.color);
-      assert.strictEqual(result.contentText, "  " + expect.contentText);
+      assert.strictEqual(result.contentText, expect.contentText);
     });
   });
 });

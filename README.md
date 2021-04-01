@@ -1,12 +1,8 @@
-# Line Width Indicator
-
-![LWI Logo](https://i.imgur.com/0cFEWGm.png)
+# Line Width Indicator 🔥
 
 [![Marketplace](https://img.shields.io/visual-studio-marketplace/v/lbragile.line-width-indicator?label=Version&style=flat-square)](https://marketplace.visualstudio.com/items?itemName=lbragile.line-width-indicator) [![License](https://img.shields.io/github/license/lbragile/Line-Width-Indicator?&label=License&&style=flat-square)](https://github.com/lbragile/Line-Width-Indicator/blob/master/LICENSE.md)
 
-[![LWI Demo](https://i.imgur.com/U2FSvgq.gif)](https://i.imgur.com/U2FSvgq.gif)
-
-👆 **Click to Enlarge** 👌
+![LWI Demo](https://i.imgur.com/DYbPiuB.gif)
 
 Tired of guessing how many more characters you can type before your formatter decides its time to wrap to the next line? What about those hefty rulers that seem out of place? Wouldn't it be nice to have a visual indicator as you type?
 
@@ -15,11 +11,11 @@ It simply places a counter at the end of each line that indicates how many chara
 
 Line Width Indicator is also **Open Source** under **MIT License**. Visit the [repository](https://github.com/lbragile/Line-Width-Indicator) and feel free to contribute!
 
-## Features
+## Features 😍
 
 Currently the indicator is shown and updates as you type with predefined colors that can be adjusted in the settings. You can also adjust which languages are affected and the maximum threshold value that your formatter allows.
 
-### Future Plans
+### Future Plans 📈
 
 - [ ] Formatting trigger when limit is reached
 - [ ] Position of comments configured in settings (same line or above)
@@ -35,13 +31,13 @@ For example if there is an image subfolder under your extension project workspac
 
 > Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow. -->
 
-## Requirements
+## Requirements 👏
 
 None 😋
 
 <!-- If you have any requirements or dependencies, add a section describing those and how to install and configure them. -->
 
-## Extension Settings
+## Extension Settings ⚙
 
 You can add the following settings:
 
@@ -53,21 +49,27 @@ You can add the following settings:
 - `LWI.comment.autoRemoveAboveUpper`: Once an ignore comment is added, this will auto remove it if the text length passes the last breakpoint.
 - `LWI.comment.autoComment`: Whether or not to automatically add the ignore comment.
 
-## Available Commands
+### Style Example
+
+![Style Demo](https://i.imgur.com/SjGaUZx.gif)
+
+## Available Commands 💻
+
+![Commands](https://i.imgur.com/GyoSYEG.gif)
 
 - `ctrl+k ctrl+a`: Enable LWI (on documents with supported languages)
 - `ctrl+k ctrl+d`: Disable LWI
 
-## Known Issues
+## Known Issues 🙄
 
-None... yet 😁
+None... yet
 
 <!-- Calling out known issues can help limit users opening duplicate issues against your extension. -->
 
 ## Release Notes
 
-This is an initial release, just to get familiar with VS Code extension publishing.
-More work will be added in the very near future. Stay tuned!
+Core functionality is now complete!
+More work will be added in the very near future - Stay tuned.
 
 See the [Change Log](https://marketplace.visualstudio.com/items/lbragile.line-width-indicator/changelog) for more in depth details.
 
