@@ -4,14 +4,14 @@ import { LineWidthIndicator } from "./components/LWI";
 export function activate(context: vscode.ExtensionContext): void {
   vscode.window.showInformationMessage("Line Width Indicator extension is active!");
 
-  const excLangs = vscode.workspace.getConfiguration("LWI").get("excludedLanguages") as string[];
-
   const LWI = new LineWidthIndicator({ color: "", contentText: "" });
-  let changeTextEvent = vscode.workspace.onDidChangeTextDocument((e) => LWI.appendCounterToLine(e, excLangs));
+
+  let changeTextEvent = vscode.workspace.onDidChangeTextDocument((e) => LWI.appendCounterToLine(e.document));
+  let changeSelectionEvent = vscode.window.onDidChangeTextEditorSelection((e) => LWI.handleSelectionChange(e));
 
   let activateEvent = vscode.commands.registerCommand("LWI.activateLWI", () => {
     vscode.window.showInformationMessage("Line Width Indicator is now enabled");
-    changeTextEvent = vscode.workspace.onDidChangeTextDocument((e) => LWI.appendCounterToLine(e, excLangs));
+    changeTextEvent = vscode.workspace.onDidChangeTextDocument((e) => LWI.appendCounterToLine(e.document));
   });
 
   let deactivateEvent = vscode.commands.registerCommand("LWI.deactivateLWI", () => {
@@ -20,11 +20,7 @@ export function activate(context: vscode.ExtensionContext): void {
     LWI.getDecorationType.dispose();
   });
 
-  if (!Array.isArray(excLangs)) {
-    vscode.window.showErrorMessage("Excluded languages must be an array!");
-  }
-
-  context.subscriptions.push(changeTextEvent, activateEvent, deactivateEvent);
+  context.subscriptions.push(changeTextEvent, changeSelectionEvent, activateEvent, deactivateEvent);
 }
 
 // this method is called when your extension is deactivated

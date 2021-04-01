@@ -1,10 +1,5 @@
 import * as vscode from "vscode";
 
-interface ITextDecor {
-  color: string;
-  contentText: string;
-}
-
 /**
  * Line Width Indicator (LWI) is a VS Code Extension that shows you the character count on each line with various colors.
  * If needed LWI also adds comments (defined in settings) to prevent formatters from considering the line.
@@ -16,6 +11,7 @@ export class LineWidthIndicator {
    * @private Current editor where the user is typing
    */
   #editor = vscode.window.activeTextEditor as vscode.TextEditor;
+
   /**
    * @private The decoration of the character counter
    */
@@ -25,7 +21,7 @@ export class LineWidthIndicator {
    *
    * @param opts style applied to the character counter
    */
-  constructor(opts: ITextDecor) {
+  constructor(opts: vscode.ThemableDecorationAttachmentRenderOptions) {
     this.#decorationType = vscode.window.createTextEditorDecorationType({ after: opts });
   }
 
@@ -39,7 +35,7 @@ export class LineWidthIndicator {
   /**
    * Mutator for decoration type member variable
    */
-  set setDecorationType(opts: ITextDecor) {
+  set setDecorationType(opts: vscode.ThemableDecorationAttachmentRenderOptions) {
     this.#decorationType = vscode.window.createTextEditorDecorationType({ after: opts });
   }
 
@@ -74,8 +70,13 @@ export class LineWidthIndicator {
    * @param text the line's current text
    * @returns An object containing the correct color to use on the character counter and the counter text itself
    */
-  getDecorDetails(text: string): ITextDecor {
-    const breakPoints = vscode.workspace.getConfiguration("LWI").get("limits.breakpoints") as { color: string; column: number }[]; // prettier-ignore
+  getDecorDetails(text: string): vscode.ThemableDecorationAttachmentRenderOptions {
+    const settings = vscode.workspace.getConfiguration("LWI");
+    const breakPoints = settings.get("limits.breakpoints") as { color: string; column: number }[];
+    const margin = (settings.get("style.marginFromText") as number) + "px";
+    const fontStyle = settings.get("style.decorationFontStyle") as string;
+    const fontWeight = settings.get("style.decorationFontWeight") as string;
+    const backgroundColor = settings.get("style.decorationBackgroundColor") as string;
 
     const columns = breakPoints.map((x) => x.column);
     const colors = breakPoints.map((x) => x.color);
@@ -86,18 +87,41 @@ export class LineWidthIndicator {
     let indexToPick = columns.filter((limit) => limit < text.length).length;
     indexToPick = indexToPick === colors.length ? indexToPick - 1 : indexToPick;
 
-    return { color: colors[indexToPick], contentText: `  ${columns[indexToPick] - text.length}` };
+    return {
+      color: colors[indexToPick],
+      contentText: `${columns[indexToPick] - text.length}`,
+      margin,
+      fontStyle,
+      fontWeight,
+      backgroundColor,
+    };
+  }
+
+  /**
+   * When the user uses the mouse or keyboard to select a different line, this moves the decoration to that line
+   * @param e Represents an event describing the change in a text editor's selections
+   */
+  handleSelectionChange(e: vscode.TextEditorSelectionChangeEvent): void {
+    if (e.kind === 1 || e.kind === 2) {
+      // keyboard or mouse selection change
+      this.getDecorationType.dispose();
+      this.appendCounterToLine(e.textEditor.document);
+    }
   }
 
   /**
    * Adds the counter text to the line in real time as the user is typing.
    * Updates the active editor as needed when the document is switched.
    * If document's language is not supported (settings), disables counter decoration.
-   * @param e The change event that occurred - either switched from one document to another or text within the document changed
-   * @param excludedLanguages A list of languages (from settings) to not consider when adding the character counter - these are ignored.
+   * @param document The document on which the change event occurred
    */
-  appendCounterToLine(e: vscode.TextDocumentChangeEvent, excludedLanguages: string[]): void {
-    const excluded = excludedLanguages.includes(e.document.languageId);
+  appendCounterToLine(document: vscode.TextDocument): void {
+    const excLangs = vscode.workspace.getConfiguration("LWI").get("excludedLanguages") as string[];
+    if (!Array.isArray(excLangs)) {
+      vscode.window.showErrorMessage("Excluded languages must be an array!");
+    }
+
+    const excluded = excLangs.includes(document.languageId);
 
     // change editor if needed
     if (this.#editor !== vscode.window.activeTextEditor) {
@@ -108,14 +132,18 @@ export class LineWidthIndicator {
       // document type is not one of the excluded languages -> add LWI
       const { position, text } = this.getLineNum();
 
-      this.toggleIgnoreComment(text);
-
-      // make a new decoration
+      // get rid of old decoration
       this.#decorationType.dispose();
-      this.#decorationType = vscode.window.createTextEditorDecorationType({ after: this.getDecorDetails(text) });
 
-      const range = [new vscode.Range(new vscode.Position(0, 0), position)];
-      this.#editor.setDecorations(this.#decorationType, range);
+      // only add new decoration and/or comment if the user typed something on that line previously
+      if (text.length > 0) {
+        this.toggleIgnoreComment(text);
+
+        // make a new decoration
+        this.#decorationType = vscode.window.createTextEditorDecorationType({ after: this.getDecorDetails(text) });
+        const range = [new vscode.Range(new vscode.Position(0, 0), position)];
+        this.#editor.setDecorations(this.#decorationType, range);
+      }
     } else {
       // remove LWI counter
       this.getDecorationType.dispose();
@@ -152,9 +180,10 @@ export class LineWidthIndicator {
 
       // insert comment only on lines that are not comments themselves
       if (textLine?.text.substr(textLine.firstNonWhitespaceCharacterIndex, 2) !== "//") {
+        const editStopOpts = { undoStopAfter: false, undoStopBefore: false };
         if (lastColumn < text.length && text.length <= lastColumn + threshold && commentRangeText !== comment) {
           // only want to add a comment (to end of line) when it isn't added yet
-          await this.#editor.edit((atPos) => atPos.insert(endPos, comment));
+          await this.#editor.edit((atPos) => atPos.insert(endPos, comment), editStopOpts);
 
           // move cursor back to where it was prior to insertion.
           // This will be the end position prior to adding the comment.
@@ -169,9 +198,9 @@ export class LineWidthIndicator {
         const upperBound = lowerBound + threshold;
         if (
           commentRangeText.includes(comment) &&
-          ((upperBound < text.length && upperRemove) || (text.length <= lowerBound && lowerRemove))
+          ((upperBound + 1 === text.length && upperRemove) || (text.length === lowerBound && lowerRemove))
         ) {
-          await this.#editor.edit((atPos) => atPos.replace(commentRange, ""));
+          await this.#editor.edit((atPos) => atPos.replace(commentRange, ""), editStopOpts);
         }
       }
     }

@@ -112,7 +112,7 @@
           "description": "A comment that is added to preserve the current line formatting (no wrapping). Depending on your formatter, this will differ.",
           "minLength": 4,
           "maxLength": 50,
-          "pattern": "// [a-z]+"
+          "pattern": "//\\s[a-z]+"
         },
         "LWI.comment.autoRemoveBelowLower": {
           "type": "boolean",
@@ -128,6 +128,53 @@
           "type": "boolean",
           "default": "true",
           "markdownDescription": "Whether or not to automatically add the `#LWI.comment.ignoreComment#`."
+        },
+        "LWI.style.marginFromText": {
+          "type": "number",
+          "default": 10,
+          "description": "In pixels, this adds horizontal spacing between the typed text and counter.",
+          "minimum": 5,
+          "maximum": 50
+        },
+        "LWI.style.decorationFontStyle": {
+          "type": "string",
+          "default": "normal",
+          "enum": [
+            "normal",
+            "italic",
+            "oblique"
+          ],
+          "enumDescriptions": [
+            "The browser displays a normal font style. This is default",
+            "The browser displays an italic font style (special font version)",
+            "The browser displays an oblique font style (slightly slanted to right)"
+          ]
+        },
+        "LWI.style.decorationFontWeight": {
+          "type": "string",
+          "default": "normal",
+          "enum": [
+            "100",
+            "200",
+            "300",
+            "normal",
+            "500",
+            "600",
+            "bold",
+            "800",
+            "900"
+          ],
+          "enumDescriptions": [
+            "Defines from thin to thick characters. 400 is the same as normal, and 700 is the same as bold"
+          ]
+        },
+        "LWI.style.decorationBackgroundColor": {
+          "type": "string",
+          "default": "transparent",
+          "description": "General string - white | transparent - or HEX - #FFF | #FFF7 - or RGBA - rgba(255, 255, 255, 0.5) - that will be used as the counter's background.",
+          "pattern": "#[a-zA-Z0-9]{3,4}|rgba?\\(([0-9.]{1,5}(,\\s)?){3,4}\\)|[a-z]{3,15}",
+          "minLength": 4,
+          "maxLength": 25
         }
       }
     }
