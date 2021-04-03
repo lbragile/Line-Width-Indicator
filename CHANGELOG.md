@@ -4,6 +4,20 @@ All notable changes to the [Line Width Indicator](https://github.com/lbragile/Li
 
 <!-- Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file. -->
 
+## [0.0.7] - 04/02/2021
+
+### Added
+
+- Toggle command (`ctrl+shift+/`) for adding/removing a format ignore comment to the current line.
+
+### Changed
+
+- Enable/Disable commands to a simpler toggle command (`ctrl+shift+i`) for enabling/disabling LWI counter in a document.
+
+### Removed
+
+- Auto commenting features since they interfered with workflow and caused unnecessary hardships to the user.
+
 ## [0.0.6] - 04/01/2021
 
 ### Added

@@ -1,5 +1,6 @@
 import * as assert from "assert";
 import * as vscode from "vscode";
+import * as sinon from "sinon";
 
 import { LineWidthIndicator } from "../../components/LWI";
 
@@ -8,7 +9,7 @@ const opts = { color: "", contentText: "" };
 suite("LWI.getNumLine", () => {
   test("output matches cursor position and line text", async () => {
     const LWI = new LineWidthIndicator(opts);
-    const editor = LWI.getActiveEditor;
+    const editor = LWI.activeEditor;
     const text = "Test LineWidthEditor\nTest Should Pass";
 
     // add text and set the cursor position to line 1, character 2
@@ -38,6 +39,31 @@ suite("LWI.getDecorDetails", () => {
       let result = LWI.getDecorDetails(text);
       assert.strictEqual(result.color, expect.color);
       assert.strictEqual(result.contentText, expect.contentText);
+    });
+  });
+});
+
+suite("LWI.handleSelectionChange", () => {
+  const LWI = new LineWidthIndicator(opts);
+  const appendCounterToLineSpy = sinon.spy(LWI, "appendCounterToLine");
+
+  [undefined, 0, 1, 2].forEach((kind) => {
+    test(`kind === ${kind}`, () => {
+      const pos = new vscode.Position(0, 0);
+      const stub: vscode.TextEditorSelectionChangeEvent = {
+        kind,
+        textEditor: vscode.window.activeTextEditor as vscode.TextEditor,
+        selections: [new vscode.Selection(pos, pos)],
+      };
+      sinon.resetHistory();
+
+      LWI.handleSelectionChange(stub);
+
+      if (stub.kind && stub.kind >= 1) {
+        sinon.assert.calledOnceWithExactly(appendCounterToLineSpy, stub.textEditor.document);
+      } else {
+        sinon.assert.notCalled(appendCounterToLineSpy);
+      }
     });
   });
 });
