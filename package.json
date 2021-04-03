@@ -1,9 +1,9 @@
 {
   "name": "line-width-indicator",
   "displayName": "Line Width Indicator",
-  "description": "Shows how many characters you can type until line limit is reached.",
+  "description": "Shows how many characters you can type until line limit is reached. Quickly add/remove format ignore comments.",
   "publisher": "lbragile",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "engines": {
     "vscode": "^1.46.0"
   },
@@ -37,37 +37,36 @@
     "theme": "light"
   },
   "activationEvents": [
-    "onCommand:LWI.activateLWI",
     "onStartupFinished"
   ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "LWI.activateLWI",
-        "title": "Enable LWI"
+        "command": "LWI.toggleState",
+        "title": "Enable/Disable LWI"
       },
       {
-        "command": "LWI.deactivateLWI",
-        "title": "Disable LWI"
+        "command": "LWI.toggleComment",
+        "title": "Add/Remove Format Ignore Comment"
       }
     ],
     "keybindings": [
       {
-        "command": "LWI.deactivateLWI",
-        "key": "ctrl+k ctrl+d",
+        "command": "LWI.toggleState",
+        "key": "ctrl+shift+i",
         "when": "editorTextFocus"
       },
       {
-        "command": "LWI.activateLWI",
-        "key": "ctrl+k ctrl+a",
+        "command": "LWI.toggleComment",
+        "key": "ctrl+shift+/",
         "when": "editorTextFocus"
       }
     ],
     "configuration": {
       "title": "Line Width Indicator",
       "properties": {
-        "LWI.limits.breakpoints": {
+        "LWI.breakpoints": {
           "type": "array",
           "default": [
             {
@@ -99,14 +98,7 @@
           ],
           "markdownDescription": "An array of [languages identifiers](https://code.visualstudio.com/docs/languages/identifiers#_known-language-identifiers) for which you wish not to use the 'Line Width Indicator' extension."
         },
-        "LWI.limits.formattingThreshold": {
-          "type": "number",
-          "default": 5,
-          "description": "Lets LWI know when to add a 'format ignore' comment to the line. If you only have 1 breakpoint, then its column value + this number is used as the upper bound. A comment is added only once the counter is between these values. If multiple breakpoints are set, then the last value is used.",
-          "minimum": 0,
-          "maximum": 100
-        },
-        "LWI.comment.ignoreComment": {
+        "LWI.ignoreComment": {
           "type": "string",
           "default": "// prettier-ignore",
           "description": "A comment that is added to preserve the current line formatting (no wrapping). Depending on your formatter, this will differ.",
@@ -114,29 +106,14 @@
           "maxLength": 50,
           "pattern": "//\\s[a-z]+"
         },
-        "LWI.comment.autoRemoveBelowLower": {
-          "type": "boolean",
-          "default": "true",
-          "markdownDescription": "Once an `#LWI.comment.ignoreComment#` is added, this will auto remove it if the text length falls below the lowest breakpoint."
-        },
-        "LWI.comment.autoRemoveAboveUpper": {
-          "type": "boolean",
-          "default": "true",
-          "markdownDescription": "Once an `#LWI.comment.ignoreComment#` is added, this will auto remove it if the text length passes the last breakpoint."
-        },
-        "LWI.comment.autoComment": {
-          "type": "boolean",
-          "default": "true",
-          "markdownDescription": "Whether or not to automatically add the `#LWI.comment.ignoreComment#`."
-        },
-        "LWI.style.marginFromText": {
+        "LWI.style.margin": {
           "type": "number",
           "default": 10,
           "description": "In pixels, this adds horizontal spacing between the typed text and counter.",
           "minimum": 5,
           "maximum": 50
         },
-        "LWI.style.decorationFontStyle": {
+        "LWI.style.fontStyle": {
           "type": "string",
           "default": "normal",
           "enum": [
@@ -150,7 +127,7 @@
             "The browser displays an oblique font style (slightly slanted to right)"
           ]
         },
-        "LWI.style.decorationFontWeight": {
+        "LWI.style.fontWeight": {
           "type": "string",
           "default": "normal",
           "enum": [
@@ -168,7 +145,7 @@
             "Defines from thin to thick characters. 400 is the same as normal, and 700 is the same as bold"
           ]
         },
-        "LWI.style.decorationBackgroundColor": {
+        "LWI.style.backgroundColor": {
           "type": "string",
           "default": "transparent",
           "description": "General string - white | transparent - or HEX - #FFF | #FFF7 - or RGBA - rgba(255, 255, 255, 0.5) - that will be used as the counter's background.",
@@ -206,12 +183,14 @@
     "@types/glob": "^7.1.3",
     "@types/mocha": "^8.0.4",
     "@types/node": "^12.11.7",
+    "@types/sinon": "^9.0.11",
     "@types/vscode": "^1.46.0",
     "@typescript-eslint/eslint-plugin": "^4.14.1",
     "@typescript-eslint/parser": "^4.14.1",
     "eslint": "^7.19.0",
     "glob": "^7.1.6",
     "mocha": "^8.2.1",
+    "sinon": "^10.0.0",
     "ts-loader": "^8.0.14",
     "typescript": "^4.1.3",
     "vscode-test": "^1.5.0",

@@ -42,12 +42,12 @@ None 😋
 You can add the following settings:
 
 - `LWI.excludedLanguages`: An array of [languages identifiers](https://code.visualstudio.com/docs/languages/identifiers#_known-language-identifiers) for which you wish not to use the 'Line Width Indicator' extension.
-- `LWI.limits.breakpoints`: The counter will change to the respective color when its count is below that column's value.
-- `LWI.limits.formattingThreshold`: This should match your default formatter maximum width before it applies text wrapping.
-- `LWI.comment.ignoreComment`: A comment that is added to preserve the current line formatting (no wrapping). Depending on your formatter, this will differ.
-- `LWI.comment.autoRemoveBelowLower`: Once an ignore comment is added, this will auto remove it if the text length falls below the lowest breakpoint.
-- `LWI.comment.autoRemoveAboveUpper`: Once an ignore comment is added, this will auto remove it if the text length passes the last breakpoint.
-- `LWI.comment.autoComment`: Whether or not to automatically add the ignore comment.
+- `LWI.breakpoints`: The counter will change to the respective color when its count is below that column's value.
+- `LWI.ignoreComment`: A comment that is added to preserve the current line formatting (no wrapping). Depending on your formatter, this will differ.
+- `LWI.style.margin`: The space between the text being typed and LWI counter.
+- `LWI.style.fontWeight`: The counter's thickness (from 100 to 900).
+- `LWI.style.fontStyle`: The counter's style (normal, italics, or oblique/slanted).
+- `LWI.style.backgroundColor`: The counter's color is added in `LWI.breakpoints` and this adds a contrasting background color.
 
 ### Style Example
 
@@ -57,8 +57,8 @@ You can add the following settings:
 
 ![Commands](https://i.imgur.com/GyoSYEG.gif)
 
-- `ctrl+k ctrl+a`: Enable LWI (on documents with supported languages)
-- `ctrl+k ctrl+d`: Disable LWI
+- `ctrl+shift+i`: Enable/Disable LWI (on documents with supported languages)
+- `ctrl+shift+/`: Add/Remove Format Ignore Comment. E.g. "// prettier-ignore"
 
 ## Known Issues 🙄
 
